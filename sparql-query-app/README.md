@@ -50,18 +50,22 @@ A modern, interactive web application for exploring and querying RDF data using 
 ## 🛠 Tech Stack
 
 ### Core Framework
+
 - **[Next.js 16](https://nextjs.org/)** - React framework with App Router
 - **[React 19.2](https://react.dev/)** - UI library
 - **[TypeScript](https://www.typescriptlang.org/)** - Type safety
 
 ### State Management & Data Fetching
+
 - **[@tanstack/react-query](https://tanstack.com/query/latest)** - Async state management
 - **[react-hook-form](https://react-hook-form.com/)** - Form validation and handling
 
 ### Styling
+
 - **[Tailwind CSS 4](https://tailwindcss.com/)** - Utility-first CSS framework
 
 ### Development Tools
+
 - **[ESLint](https://eslint.org/)** - Code linting
 - **[PostCSS](https://postcss.org/)** - CSS processing
 
@@ -103,11 +107,13 @@ sparql-query-app/
 ### Installation
 
 1. **Clone the repository** (or navigate to your project directory):
+
    ```bash
    cd sparql-query-app
    ```
 
 2. **Install dependencies**:
+
    ```bash
    npm install
    # or
@@ -156,6 +162,7 @@ This creates an optimized production build and starts the production server.
 ### Query Interface
 
 The query form accepts standard SPARQL 1.1 queries. Results are automatically parsed and displayed in a table format with:
+
 - Column headers from query variables
 - Row data from result bindings
 - Clean styling with hover effects
@@ -261,12 +268,15 @@ HomePage (page.tsx)
 Executes a SPARQL query against the DBpedia endpoint.
 
 **Parameters:**
+
 - `query` (string): SPARQL query string
 
 **Returns:**
+
 - Promise resolving to JSON response with `head` and `results` objects
 
 **Example:**
+
 ```typescript
 const data = await fetchSparql(`
   SELECT ?name WHERE {
@@ -297,12 +307,14 @@ const endpoint = "https://your-sparql-endpoint.com/sparql";
 ### Styling
 
 The app uses Tailwind CSS. Customize colors, spacing, and components in:
+
 - `app/globals.css` - Global styles
 - Component files - Inline Tailwind classes
 
 ### Adding Features
 
 Consider adding:
+
 - Query history
 - Saved queries/favorites
 - Multiple endpoint support
@@ -342,6 +354,7 @@ This project is open source and available under the [MIT License](LICENSE).
 ## 📞 Support
 
 For issues, questions, or suggestions:
+
 - Open an issue in the repository
 - Check existing issues for solutions
 - Refer to [Next.js Documentation](https://nextjs.org/docs)
