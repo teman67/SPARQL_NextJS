@@ -172,17 +172,14 @@ The query form accepts standard SPARQL 1.1 queries. Results are automatically pa
 
 ## 📝 Example Queries
 
-### 1. Get Information About Tim Berners-Lee
+### 1. Get all actors in a movie
 
 ```sparql
-SELECT ?label ?abstract
-WHERE {
-  <http://dbpedia.org/resource/Tim_Berners-Lee> rdfs:label ?label .
-  <http://dbpedia.org/resource/Tim_Berners-Lee> dbo:abstract ?abstract .
-  FILTER (LANG(?label) = 'en')
-  FILTER (LANG(?abstract) = 'en')
+SELECT ?actor ?name WHERE {
+  dbr:Inception dbo:starring ?actor.
+  ?actor rdfs:label ?name.
+  FILTER (lang(?name) = 'en')
 }
-LIMIT 1
 ```
 
 ### 2. List 10 Programming Languages
