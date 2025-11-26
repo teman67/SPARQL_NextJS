@@ -1,3 +1,5 @@
+"use client";
+
 type Props = {
   data: {
     head?: { vars: string[] };
