@@ -7,6 +7,8 @@ A modern, interactive web application for exploring and querying RDF data using 
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue?style=flat-square&logo=typescript)
 ![TailwindCSS](https://img.shields.io/badge/TailwindCSS-4.x-38bdf8?style=flat-square&logo=tailwindcss)
 
+### [Live Demo](https://sparql-next-js.vercel.app/)
+
 ---
 
 ## 📋 Table of Contents
