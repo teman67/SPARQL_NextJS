@@ -1,4 +1,5 @@
-"use client";
+import { useSearchParams } from "next/navigation";
+import { useState } from "react";
 
 type Props = {
   data: {
@@ -8,10 +9,24 @@ type Props = {
 };
 
 export default function ResultsTable({ data }: Props) {
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  
   if (!data) return null;
 
   const vars = data.head?.vars || [];
   const bindings = data.results?.bindings || [];
+  
+  // Pagination logic
+  const totalPages = Math.ceil(bindings.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentBindings = bindings.slice(startIndex, endIndex);
+  
+  // Reset to page 1 when bindings change
+  if (currentPage > totalPages && totalPages > 0) {
+    setCurrentPage(1);
+  }
 
   if (bindings.length === 0) {
     return (
@@ -64,7 +79,7 @@ export default function ResultsTable({ data }: Props) {
               <h2 className="text-xl font-bold text-gray-800">Query Results</h2>
               <p className="text-sm text-gray-500">
                 {bindings.length} {bindings.length === 1 ? "result" : "results"}{" "}
-                found
+                found • Page {currentPage} of {totalPages}
               </p>
             </div>
           </div>
@@ -125,7 +140,7 @@ export default function ResultsTable({ data }: Props) {
               </tr>
             </thead>
             <tbody>
-              {bindings.map(
+              {currentBindings.map(
                 (
                   row: Record<string, { value: string; type?: string }>,
                   i: number
@@ -135,7 +150,7 @@ export default function ResultsTable({ data }: Props) {
                     className="hover:bg-blue-50 transition-colors border-b border-gray-100 last:border-b-0"
                   >
                     <td className="px-4 py-3 text-gray-500 font-medium whitespace-nowrap">
-                      {i + 1}
+                      {startIndex + i + 1}
                     </td>
                     {vars.map((v: string) => {
                       const value = row[v]?.value;
@@ -184,6 +199,113 @@ export default function ResultsTable({ data }: Props) {
             </tbody>
           </table>
         </div>
+        
+        {/* Pagination Controls */}
+        {bindings.length > 0 && (
+          <div className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+            {/* Items per page selector */}
+            <div className="flex items-center gap-2">
+              <label className="text-sm text-gray-600 font-medium">
+                Items per page:
+              </label>
+              <select
+                value={itemsPerPage}
+                onChange={(e) => {
+                  setItemsPerPage(Number(e.target.value));
+                  setCurrentPage(1);
+                }}
+                className="px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+              >
+                <option value={5}>5</option>
+                <option value={10}>10</option>
+                <option value={25}>25</option>
+                <option value={50}>50</option>
+                <option value={100}>100</option>
+              </select>
+            </div>
+            
+            {/* Page info and navigation */}
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-600 mr-2">
+                Showing {startIndex + 1} to {Math.min(endIndex, bindings.length)} of {bindings.length}
+              </span>
+              
+              <button
+                onClick={() => setCurrentPage(1)}
+                disabled={currentPage === 1}
+                className="px-3 py-1.5 rounded-lg border border-gray-300 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                title="First page"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
+                </svg>
+              </button>
+              
+              <button
+                onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                disabled={currentPage === 1}
+                className="px-3 py-1.5 rounded-lg border border-gray-300 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                title="Previous page"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+              
+              {/* Page numbers */}
+              <div className="flex items-center gap-1">
+                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                  let pageNum;
+                  if (totalPages <= 5) {
+                    pageNum = i + 1;
+                  } else if (currentPage <= 3) {
+                    pageNum = i + 1;
+                  } else if (currentPage >= totalPages - 2) {
+                    pageNum = totalPages - 4 + i;
+                  } else {
+                    pageNum = currentPage - 2 + i;
+                  }
+                  
+                  return (
+                    <button
+                      key={pageNum}
+                      onClick={() => setCurrentPage(pageNum)}
+                      className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                        currentPage === pageNum
+                          ? 'bg-blue-600 text-white'
+                          : 'border border-gray-300 text-gray-700 hover:bg-gray-50'
+                      }`}
+                    >
+                      {pageNum}
+                    </button>
+                  );
+                })}
+              </div>
+              
+              <button
+                onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                disabled={currentPage === totalPages}
+                className="px-3 py-1.5 rounded-lg border border-gray-300 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                title="Next page"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+              
+              <button
+                onClick={() => setCurrentPage(totalPages)}
+                disabled={currentPage === totalPages}
+                className="px-3 py-1.5 rounded-lg border border-gray-300 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                title="Last page"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 5l7 7-7 7M5 5l7 7-7 7" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
